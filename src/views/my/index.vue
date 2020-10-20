@@ -10,9 +10,9 @@
           width="50"
           height="50"
           fit="cover"
-          src="https://img.yzcdn.cn/vant/cat.jpeg"
+          :src="currentUser.photo"
         />
-        <span class="name" solt="title">昵称</span>
+        <span class="name" solt="title">{{ currentUser.name }}</span>
         <van-button slot="right-icon" round size="small" class="about"
           >编辑资料</van-button
         >
@@ -20,19 +20,19 @@
       <!-- 头部-宫格 -->
       <van-grid class="heaer-grid" :border="false">
         <van-grid-item class="heaer-grid-item">
-          <span slot="icon">123</span>
+          <span slot="icon">{{ currentUser.art_count }}</span>
           <span slot="text">头条</span>
         </van-grid-item>
         <van-grid-item class="heaer-grid-item">
-          <span slot="icon">123</span>
+          <span slot="icon">{{ currentUser.follow_count }}</span>
           <span slot="text">关注</span>
         </van-grid-item>
         <van-grid-item class="heaer-grid-item">
-          <span slot="icon">123</span>
+          <span slot="icon">{{ currentUser.fans_count }}</span>
           <span slot="text">粉丝</span>
         </van-grid-item>
         <van-grid-item class="heaer-grid-item">
-          <span slot="icon">123</span>
+          <span slot="icon">{{ currentUser.like_count }}</span>
           <span slot="text">获赞</span>
         </van-grid-item>
       </van-grid>
@@ -54,21 +54,50 @@
     <!-- 导航 -->
     <van-cell title="消息通知" is-link to="" />
     <van-cell class="mb-4" title="我的助手" is-link to="" />
-    <van-cell v-if="user" class="exit" title="退出登录" />
     <!-- 注销按钮 -->
+    <van-cell v-if="user" class="exit" title="退出登录" @click="dia" />
   </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
+import { getCurrentUser } from "@/api/user";
 export default {
   name: "MyIndex",
   data() {
-    return {};
+    return {
+      // 当前登录用户信息
+      currentUser: {},
+    };
   },
   computed: {
     // 用户信息
     ...mapState(["user"]),
+  },
+  created() {
+    this.loadCurrentUser();
+  },
+  methods: {
+    async loadCurrentUser() {
+      const { data } = await getCurrentUser();
+      this.currentUser = data.data;
+    },
+    dia() {
+      // 提示用户确认退出
+      this.$dialog
+        .confirm({
+          title: "退出提示",
+          message: "确认退出吗?",
+        })
+        .then(() => {
+          //确认执行
+          //  清除用户登录状态
+          this.$store.commit("setUser", null);
+        })
+        .catch(() => {
+          //取消执行
+        });
+    },
   },
 };
 </script>

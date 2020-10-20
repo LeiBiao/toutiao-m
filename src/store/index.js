@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import { getItem, setItem } from '@/utils/storage'
 Vue.use(Vuex)
 const USER_KEY = 'login-user'
+    // 导出容器实例
 export default new Vuex.Store({
     state: {
         //当前用户的登录状态(token等数据)
