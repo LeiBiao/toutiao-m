@@ -23,7 +23,31 @@
         <!-- 文章列表组件 -->
         <article-list :channel="channel" />
       </van-tab>
+      <!-- 占位避免汉堡挡住文章频道 -->
+      <div slot="nav-right" class="place"></div>
+      <!-- 汉堡按钮 -->
+      <div class="navright" slot="nav-right">
+        <van-icon name="wap-nav" @click="show = true" />
+      </div>
     </van-tabs>
+    <!-- 弹出层 -->
+    <!-- get-container="body"挂载到body -->
+    <van-popup
+      v-model="show"
+      position="bottom"
+      closeable
+      close-icon-position="top-left"
+      get-container="body"
+      :style="{ height: '100%' }"
+    >
+      <!-- 频道编辑组件 -->
+      <channel-edit
+        :channels="channels"
+        :active="active"
+        @close="show = false"
+        @update-active="onUpdateActive"
+      ></channel-edit>
+    </van-popup>
   </div>
 </template>
 
@@ -31,17 +55,23 @@
 import { getUserChannels } from "@/api/user";
 // 加载文章列表子组件
 import ArticleList from "./components/article-list";
+// 加载频道编辑子组件
+import ChannelEdit from "./components/channel-edit";
 export default {
   name: "HomeIndex",
   components: {
     // 注册文章列表组件
     ArticleList,
+    // 注册频道编辑组件
+    ChannelEdit,
   },
   data() {
     return {
       active: 0,
       // 频道列表
       channels: [],
+      //编辑频道的显示状态
+      show: true,
     };
   },
   created() {
@@ -53,6 +83,10 @@ export default {
       const { data } = await getUserChannels();
       // console.log(data);
       this.channels = data.data.channels;
+    },
+    // 切换频道
+    onUpdateActive(index) {
+      this.active = index;
     },
   },
 };
@@ -74,6 +108,23 @@ export default {
       width: 15px;
       height: 3px;
       background: #2a92fe;
+    }
+  }
+  .place {
+    width: 33px;
+    flex-shrink: 0;
+  }
+  .navright {
+    position: fixed;
+    right: 0;
+    width: 33px;
+    height: 43px;
+    // margin-top: 10px;
+    background: #fff;
+    opacity: 0.9;
+    .van-icon {
+      font-size: 22px;
+      line-height: 44px;
     }
   }
 }
