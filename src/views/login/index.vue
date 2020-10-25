@@ -7,8 +7,6 @@
       left-arrow
       @click-left="$router.back()"
     />
-    <!-- /导航栏 -->
-
     <!-- 表单 -->
     <!-- 关闭标红输入框 
     :show-error="false"

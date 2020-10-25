@@ -30,6 +30,13 @@ const routes = [{
     name: 'search',
     component: () =>
         import ('@/views/search/')
+}, {
+    path: '/article/:articleId',
+    name: 'article',
+    component: () =>
+        import ('@/views/article/'),
+    // 将动态路由参数映射到组件的props中
+    props: true
 }]
 
 const router = new VueRouter({
