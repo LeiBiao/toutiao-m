@@ -9,6 +9,7 @@
         icon="search"
         type="info"
         round
+        to="/search"
       >
         搜索</van-button
       >
@@ -57,6 +58,8 @@ import { getUserChannels } from "@/api/user";
 import ArticleList from "./components/article-list";
 // 加载频道编辑子组件
 import ChannelEdit from "./components/channel-edit";
+import { mapState } from "vuex";
+import { getItem } from "@/utils/storage";
 export default {
   name: "HomeIndex",
   components: {
@@ -71,8 +74,11 @@ export default {
       // 频道列表
       channels: [],
       //编辑频道的显示状态
-      show: true,
+      show: false,
     };
+  },
+  computed: {
+    ...mapState(["user"]),
   },
   created() {
     this.loadChaanels();
@@ -80,9 +86,27 @@ export default {
   methods: {
     async loadChaanels() {
       // 请求获取频道数据
-      const { data } = await getUserChannels();
-      // console.log(data);
-      this.channels = data.data.channels;
+      // const { data } = await getUserChannels();
+      // this.channels = data.data.channels;
+      let channels = [];
+      if (this.user) {
+        // 以登陆,获取线上用户的用户频道列表数据
+        const { data } = await getUserChannels();
+        channels = data.data.channels;
+      } else {
+        // 未登录,判断是否有本地存储的频道列表数据
+        const localChannels = getItem("user-channels");
+        //如果有本地存储的频道列表
+        if (localChannels) {
+          channels = localChannels;
+        } else {
+          // 用户未登录,且没有本地存储的频道,就请求获取默认的频道列表
+          const { data } = await getUserChannels();
+          channels = data.data.channels;
+        }
+      }
+      // 把处理好的数据放到data中供模板使用
+      this.channels = channels;
     },
     // 切换频道
     onUpdateActive(index) {
